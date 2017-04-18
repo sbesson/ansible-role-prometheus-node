@@ -1,7 +1,7 @@
 import testinfra.utils.ansible_runner
 
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
-    '.molecule/ansible_inventory').get_hosts('prometheus-node')
+    '.molecule/ansible_inventory').get_hosts('all')
 
 
 def test_services_running_and_enabled(Service):

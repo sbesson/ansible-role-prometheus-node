@@ -1,24 +1,12 @@
 ---
-# handlers file for prometheus
+# handlers file for prometheus-node
 
 - name: reload systemd
   become: yes
   command: systemctl daemon-reload
 
-- name: restart prometheus
+- name: restart prometheus-node-exporter
   become: yes
   service:
-    name: prometheus
-    state: restarted
-
-- name: restart alertmanager
-  become: yes
-  service:
-    name: prometheus-alertmanager
-    state: restarted
-
-- name: restart blackbox-exporter
-  become: yes
-  service:
-    name: prometheus-blackbox-exporter
+    name: prometheus-node-exporter
     state: restarted

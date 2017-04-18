@@ -1,7 +1,7 @@
 Prometheus
 ==========
 
-Prometheus monitoring server
+Prometheus node-exporter
 
 
 Example playbook
@@ -9,7 +9,7 @@ Example playbook
 
     - hosts: localhost
       roles:
-      - role: prometheus
+      - role: prometheus-node
 
 
 Author Information

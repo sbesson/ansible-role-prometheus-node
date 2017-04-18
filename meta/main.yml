@@ -1,9 +1,9 @@
 galaxy_info:
   author: ome-devel@lists.openmicroscopy.org.uk
-  description: Prometheus monitoring server
+  description: Prometheus node-exporter
   company: Open Microscopy Environment
   license: BSD
-  min_ansible_version: 2.1
+  min_ansible_version: 2.2
   platforms:
   - name: EL
     versions:

@@ -1,68 +1,61 @@
 ---
-# tasks file for prometheus
+# tasks file for prometheus-node
 
-- include: components.yml
+- name: prometheus node | create directories
+  become: yes
+  file:
+    path: /opt/prometheus
+    recurse: yes
+    state: directory
+
+- name: prometheus node | create user
+  become: yes
+  user:
+    home: /opt/prometheus
+    name: prometheus
+    state: present
+    system: yes
+
+- name: prometheus node | download node-exporter
+  become: yes
+  get_url:
+    url: https://github.com/prometheus/node_exporter/releases/download/v0.14.0/node_exporter-0.14.0.linux-amd64.tar.gz
+    checksum: "sha256:d5980bf5d0dc7214741b65d3771f08e6f8311c86531ae21c6ffec1d643549b2e"
+    dest: /opt/prometheus/node_exporter-0.14.0.linux-amd64.tar.gz
+    force: no
+
+- name: prometheus node | install node-exporter
+  become: yes
+  unarchive:
+    src: /opt/prometheus/node_exporter-0.14.0.linux-amd64.tar.gz
+    dest: /opt/prometheus
+    remote_src: yes
+
+- name: prometheus node | symlink node-exporter
+  become: yes
+  file:
+    src: /opt/prometheus/node_exporter-0.14.0.linux-amd64
+    path: /opt/prometheus/node_exporter
+    force: yes
+    state: link
+
+- name: prometheus node | systemd service
+  become: yes
+  template:
+    dest: "/etc/systemd/system/prometheus-node-exporter.service"
+    force: yes
+    src: "systemd-system-prometheus-node-exporter-service.j2"
+  notify:
+  - reload systemd
+  - restart prometheus-node-exporter
 
 # Flush handlers to ensure systemd is reloaded
-- name: prometheus | flush systemd handlers
+- name: prometheus node | flush systemd handlers
   meta: flush_handlers
 
-- name: prometheus | prometheus configuration file
-  become: yes
-  template:
-    dest: /etc/prometheus/prometheus.yml
-    force: yes
-    src: etc-prometheus-prometheus-yml.j2
-  when: "{{ 'prometheus' in prometheus_components }}"
-  notify:
-  - restart prometheus
-
-- name: prometheus | prometheus alert rules
-  become: yes
-  copy:
-    dest: /etc/prometheus/alert.rules
-    force: yes
-    src: etc-prometheus-alert.rules
-  when: "{{ 'prometheus' in prometheus_components }}"
-  notify:
-  - restart prometheus
-
-- name: prometheus | alertmanager configuration file
-  become: yes
-  template:
-    dest: /etc/prometheus/alertmanager.yml
-    force: yes
-    src: etc-prometheus-alertmanager-yml.j2
-  when: "{{ 'alertmanager' in prometheus_components }}"
-  notify:
-  - restart alertmanager
-
-- name: prometheus | blackbox configuration file
-  become: yes
-  copy:
-    dest: /etc/prometheus/blackbox-exporter.yml
-    force: yes
-    src: etc-prometheus-blackbox-exporter.yml
-  when: "{{ 'blackbox_exporter' in prometheus_components }}"
-  notify:
-  - restart blackbox-exporter
-
-- name: prometheus | jmx javaagent configuration file
-  become: yes
-  copy:
-    dest: /etc/prometheus/jmx-default-config.yml
-    force: yes
-    src: etc-prometheus-jmx-default-config.yml
-  when: "{{ 'jmx_javaagent' in prometheus_components }}"
-
-- name: prometheus | enable and start systemd components
+- name: prometheus node | enable and start systemd service
   become: yes
   service:
     enabled: yes
-    name: "{{ prometheus_component_specs[item].service }}.service"
+    name: prometheus-node-exporter.service
     state: started
-  when: "{{ prometheus_component_specs[item].service is defined }}"
-  with_items:
-  - "{{ prometheus_components }}"
-
-# TODO: restart if systemd.service files changed?

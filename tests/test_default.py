@@ -10,5 +10,5 @@ def test_services_running_and_enabled(Service):
 
 
 def test_node_exporter_metrics(Command):
-    out = Command.check_output('curl http://localhost:9100/metrics')
+    out = Command.check_output('curl http://localhost:19100/metrics')
     assert 'process_cpu_seconds_total' in out

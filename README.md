@@ -1,7 +1,14 @@
 Prometheus
 ==========
 
-Prometheus node-exporter
+Prometheus node-exporter, defaults to listening on port 9100.
+
+
+Role Variables
+--------------
+
+- `prometheus_node_args`: Arguments passed on the command line.
+  See https://github.com/prometheus/node_exporter/ for configuration information.
 
 
 Example playbook

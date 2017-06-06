@@ -8,14 +8,6 @@
     recurse: yes
     state: directory
 
-- name: prometheus node | create user
-  become: yes
-  user:
-    home: /opt/prometheus
-    name: prometheus
-    state: present
-    system: yes
-
 - name: prometheus node | download node-exporter
   become: yes
   get_url:
@@ -29,6 +21,8 @@
   unarchive:
     src: /opt/prometheus/node_exporter-0.14.0.linux-amd64.tar.gz
     dest: /opt/prometheus
+    group: root
+    owner: root
     remote_src: yes
 
 - name: prometheus node | symlink node-exporter

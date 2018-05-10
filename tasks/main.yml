@@ -11,15 +11,15 @@
 - name: prometheus node | download node-exporter
   become: yes
   get_url:
-    url: https://github.com/prometheus/node_exporter/releases/download/v0.14.0/node_exporter-0.14.0.linux-amd64.tar.gz
-    checksum: "sha256:d5980bf5d0dc7214741b65d3771f08e6f8311c86531ae21c6ffec1d643549b2e"
-    dest: /opt/prometheus/node_exporter-0.14.0.linux-amd64.tar.gz
+    url: https://github.com/prometheus/node_exporter/releases/download/v{{ prometheus_node_version }}/node_exporter-0.15.2.linux-amd64.tar.gz
+    checksum: "sha256:{{ prometheus_node_sha256 }}"
+    dest: /opt/prometheus/node_exporter-{{ prometheus_node_version }}.linux-amd64.tar.gz
     force: no
 
 - name: prometheus node | install node-exporter
   become: yes
   unarchive:
-    src: /opt/prometheus/node_exporter-0.14.0.linux-amd64.tar.gz
+    src: /opt/prometheus/node_exporter-{{ prometheus_node_version }}.linux-amd64.tar.gz
     dest: /opt/prometheus
     group: root
     owner: root
@@ -28,7 +28,7 @@
 - name: prometheus node | symlink node-exporter
   become: yes
   file:
-    src: /opt/prometheus/node_exporter-0.14.0.linux-amd64
+    src: /opt/prometheus/node_exporter-{{ prometheus_node_version }}.linux-amd64
     path: /opt/prometheus/node_exporter
     force: yes
     state: link

@@ -2,11 +2,14 @@
 # handlers file for prometheus-node
 
 - name: reload systemd
-  become: yes
+  become: true
   command: systemctl daemon-reload
+  tags:
+    # [ANSIBLE0006] systemctl used in place of systemd module
+    - skip_ansible_lint
 
 - name: restart prometheus-node-exporter
-  become: yes
+  become: true
   service:
     name: prometheus-node-exporter
     state: restarted

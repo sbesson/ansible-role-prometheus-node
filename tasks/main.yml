@@ -2,54 +2,58 @@
 # tasks file for prometheus-node
 
 - name: prometheus node | create directories
-  become: yes
+  become: true
   file:
     path: /opt/prometheus
-    recurse: yes
+    recurse: true
     state: directory
 
 - name: prometheus node | download node-exporter
-  become: yes
+  become: true
   get_url:
-    url: https://github.com/prometheus/node_exporter/releases/download/v{{ prometheus_node_version }}/node_exporter-0.15.2.linux-amd64.tar.gz
+    url: "https://github.com/prometheus/node_exporter/releases/download/\
+      v{{ prometheus_node_version }}/node_exporter-0.15.2.linux-amd64.tar.gz"
     checksum: "sha256:{{ prometheus_node_sha256 }}"
-    dest: /opt/prometheus/node_exporter-{{ prometheus_node_version }}.linux-amd64.tar.gz
-    force: no
+    dest: "/opt/prometheus/\
+      node_exporter-{{ prometheus_node_version }}.linux-amd64.tar.gz"
+    force: false
 
 - name: prometheus node | install node-exporter
-  become: yes
+  become: true
   unarchive:
-    src: /opt/prometheus/node_exporter-{{ prometheus_node_version }}.linux-amd64.tar.gz
+    src: "/opt/prometheus/\
+      node_exporter-{{ prometheus_node_version }}.linux-amd64.tar.gz"
     dest: /opt/prometheus
     group: root
     owner: root
-    remote_src: yes
+    remote_src: true
 
 - name: prometheus node | symlink node-exporter
-  become: yes
+  become: true
   file:
-    src: /opt/prometheus/node_exporter-{{ prometheus_node_version }}.linux-amd64
+    src: "/opt/prometheus/\
+      node_exporter-{{ prometheus_node_version }}.linux-amd64"
     path: /opt/prometheus/node_exporter
-    force: yes
+    force: true
     state: link
 
 - name: prometheus node | systemd service
-  become: yes
+  become: true
   template:
     dest: "/etc/systemd/system/prometheus-node-exporter.service"
-    force: yes
+    force: true
     src: "systemd-system-prometheus-node-exporter-service.j2"
   notify:
-  - reload systemd
-  - restart prometheus-node-exporter
+    - reload systemd
+    - restart prometheus-node-exporter
 
 # Flush handlers to ensure systemd is reloaded
 - name: prometheus node | flush systemd handlers
   meta: flush_handlers
 
 - name: prometheus node | enable and start systemd service
-  become: yes
+  become: true
   service:
-    enabled: yes
+    enabled: true
     name: prometheus-node-exporter.service
     state: started
